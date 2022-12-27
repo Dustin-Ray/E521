@@ -6,20 +6,15 @@ use num::Zero;
 // use crypto_bigint::{};
 #[derive(Debug)]
 struct E521 {
-    x: BigInt,
-    y: BigInt,
-    p: BigInt,
-    d: BigInt,
-    r: BigInt,
-    n: BigInt,
+    pub x: BigInt,
+    pub y: BigInt,
+    pub p: BigInt,
+    pub d: BigInt,
+    pub r: BigInt,
+    pub n: BigInt,
 }
 
 fn main() {
-    // println!("value of r: {:?}", get_r());
-    // println!("value of p: {:?}", get_p());
-    // println!("value of n: {:?}", get_n());
-    // println!("value of d: {:?}", get_d());
-
     println!("gen point y coord: {:?}", get_e521_gen_point(false).y);
     // println!("id point: {:?}", get_e521_id_point());
 }
