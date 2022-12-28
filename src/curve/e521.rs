@@ -4,6 +4,7 @@ pub mod e521 {
     use num::Integer;
     use num::One;
     use num::Zero;
+    
     /*
     𝐸521 curve (a so-called Edwards curve), is defined by the following parameters:
     • 𝑝 ≔ 2^521−1, a Mersenne prime defining the finite field 𝔽𝑝 .

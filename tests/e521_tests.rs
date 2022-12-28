@@ -2,8 +2,9 @@
 mod tests {
     
     use e521::curve::e521::e521::{get_e521_gen_point, get_e521_id_point, sec_mul, negate_point, add_points, e521_equals, get_e521_point};
-    use num_bigint::{BigInt};
-    
+    use num::Integer;
+    use num_bigint::{BigInt, RandBigInt};
+    use rand::{Rng, thread_rng};
     #[test]
     // 0 * G = neutral point
     fn test_zero_times_g() {
@@ -68,10 +69,106 @@ mod tests {
     #[test]
     //4 * G != neutral point
     fn test_four_g_not_id() {
+        let four_g = sec_mul(BigInt::from(4), get_e521_gen_point(false));
+        let id = get_e521_id_point();
 
-
+        assert!(!e521_equals(&four_g, &id))
 
     }
 
+    #[test]
+    fn r_times_g_id() {
+        let g = get_e521_gen_point(false);
+        let result = sec_mul(g.r, get_e521_gen_point(false));
+        assert!(e521_equals(&result, &get_e521_id_point()))
+    }
 
+    #[test]
+    // k*G = (k mod r)*G
+    fn k_g_equals_k_mod_r_times_g() {
+        
+        for _ in 0..20 {
+            let mut rng = thread_rng();
+            let k_u128: u64 = rng.gen();
+            let k = BigInt::from(k_u128);
+            let same_k = k.clone();
+
+            let g = get_e521_gen_point(false);
+            let r = get_e521_gen_point(false).r;
+            let k_g = sec_mul(k, g);
+
+            let k_mod_r = same_k.mod_floor(&r);
+            let k_mod_r_timesg = sec_mul(k_mod_r, get_e521_gen_point(false));
+            assert!(e521_equals(&k_g, &k_mod_r_timesg))
+        }
+    }
+    #[test]
+    //(k + 1)*G = (k*G) + G
+    fn k_plus_one_g() {
+
+        for _ in 0..20 {
+            let mut rng = thread_rng();
+            let k_u128: u64 = rng.gen();
+            let k = BigInt::from(k_u128);
+            let k_plus_one = k.clone()+1;
+
+            let k_plus_one_g = sec_mul(k_plus_one, get_e521_gen_point(false));
+
+            let k_g_plus_g = sec_mul(k, get_e521_gen_point(false));
+            let k_g_plus_g = add_points(&k_g_plus_g, &get_e521_gen_point(false));
+
+            assert!(e521_equals(&k_plus_one_g, &k_g_plus_g))
+        }
+    }
+    #[test]
+    //(k + t)*G = (k*G) + (t*G)
+    fn k_t () {
+        
+        for _ in 0..20 {
+            let mut rng = thread_rng();
+            
+            let rnd: u64 = rng.gen();
+            let k = BigInt::from(rnd);
+            let k_2 = k.clone();
+
+            let t = BigInt::from(rnd);
+            let t_2 = t.clone();
+
+            let r0 = sec_mul(k+t, get_e521_gen_point(false));
+            
+            let r1 = sec_mul(k_2, get_e521_gen_point(false));
+            let r2 = sec_mul(t_2, get_e521_gen_point(false));
+            let r3 = add_points(&r1,&r2);
+
+            assert!(e521_equals(&r0, &r3))
+        }
+    }
+
+    #[test]
+    //k*(t*P) = t*(k*G) = (k*t mod r)*G
+    fn test_ktp() {
+
+        for _ in 0..20 {
+            let r = get_e521_gen_point(false);
+            let r = r.r;
+            let mut rng = thread_rng();
+                
+            let rnd: u64 = rng.gen();
+            let k = BigInt::from(rnd);
+            let k_2 = k.clone();
+            let k_3 = k.clone();
+
+            let t = BigInt::from(rnd);
+            let t_2 = t.clone();
+            let t_3 = t.clone();
+
+            let ktp = sec_mul(k, sec_mul(t, get_e521_gen_point(false)));
+            let tkg = sec_mul(t_2, sec_mul(k_2, get_e521_gen_point(false)));
+
+            let k_t_mod_r_g = sec_mul((k_3*t_3).mod_floor(&r), get_e521_gen_point(false));
+
+            assert!(e521_equals(&ktp, &tkg) && e521_equals(&k_t_mod_r_g, &tkg) && e521_equals(&k_t_mod_r_g, &ktp))
+        }
+
+    }
 }
