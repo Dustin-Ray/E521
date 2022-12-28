@@ -1,4 +1,4 @@
-# Secure Elliptic Curve Point Multiplication
+# Constant time Edwards curve point multiplication
 
 ## Background
 
