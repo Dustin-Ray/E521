@@ -6,9 +6,9 @@ pub mod e521 {
     use num::Zero;
     
     /*
-    𝐸521 curve (a so-called Edwards curve), is defined by the following parameters:
-    • 𝑝 ≔ 2^521−1, a Mersenne prime defining the finite field 𝔽𝑝 .
-    • curve equation: 𝑥^2 + 𝑦^2 = 1 + 𝑑𝑥^2𝑦^2 with 𝑑 = −376014. 
+        𝐸_521 curve (a so-called Edwards curve), is defined by the following parameters:
+        • 𝑝 ≔ 2^521−1, a Mersenne prime defining the finite field 𝔽𝑝 .
+        • curve equation: 𝑥^2 + 𝑦^2 = 1 + 𝑑𝑥^2𝑦^2 with 𝑑 = −376014. 
     */
     #[derive(Debug)]
     pub struct E521 {
