@@ -99,7 +99,6 @@ pub mod e521 {
     // Compare points for equality by coordinate values only.
     pub fn e521_equals(p1: &E521, p2: &E521) -> bool { p1.x == p2.x && p1.y == p2.y }
 
-    
     ///Adds two E521 points and returns another E521 curve point. If a point is defined as
     /// E521 = (x, y), then E521 addition is defined as:
 
@@ -160,11 +159,8 @@ pub mod e521 {
                 r1 = add_points(&r0, &r1);
                 r0 = add_points(&r0, &r0);
             }
-            }
-        r0
+        } r0
     }
-
-
 
     /// Solves for y in curve equation 𝑥^2 + 𝑦^2 = 1 + 𝑑𝑥^2𝑦^2
     fn solve_for_y(x: &BigInt, p: BigInt, msb: bool) -> BigInt {
