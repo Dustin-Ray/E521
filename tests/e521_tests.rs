@@ -3,7 +3,7 @@ mod tests {
     
     use e521::curve::e521::e521::{get_e521_gen_point, get_e521_id_point, sec_mul, negate_point, add_points, e521_equals, get_e521_point};
     use num::Integer;
-    use num_bigint::{BigInt, RandBigInt};
+    use num_bigint::{BigInt};
     use rand::{Rng, thread_rng};
     #[test]
     // 0 * G = neutral point
