@@ -6,9 +6,9 @@ pub mod e521 {
     use num::Zero;
     
     /*
-        𝐸_521 curve (a so-called Edwards curve), is defined by the following parameters:
-        • 𝑝 ≔ 2^521−1, a Mersenne prime defining the finite field 𝔽𝑝 .
-        • curve equation: 𝑥^2 + 𝑦^2 = 1 + 𝑑𝑥^2𝑦^2 with 𝑑 = −376014. 
+        𝐸₅₂₁ curve (a so-called Edwards curve), is defined by the following parameters:
+        • 𝑝 ≔ 2⁵²¹−1, a Mersenne prime defining the finite field 𝔽𝑝 .
+        • curve equation: 𝑥² + 𝑦² = 1 + 𝑑𝑥²𝑦² with 𝑑 = −376014. 
     */
     #[derive(Debug)]
     pub struct E521 {
@@ -28,7 +28,7 @@ pub mod e521 {
         return r;
     }
 
-    /// Initializes curve order, 𝑝 ≔ 2^521−1, a Mersenne prime defining the finite field 𝔽𝑝.
+    /// Initializes curve modulus 𝑝 := 2⁵²¹−1, a Mersenne prime defining the finite field 𝔽𝑝.
     fn set_p() -> BigInt {
         let p = BigInt::from(2);
         let p = p.pow(521);
@@ -46,7 +46,7 @@ pub mod e521 {
     /// Sets the curve d parameter. 
     fn set_d() -> BigInt { return Some(BigInt::from(-376014)).unwrap();}
 
-    /// Generates the neutral point (0, 1)
+    /// Generates the neutral point 𝒪 = (0, 1)
     pub fn get_e521_id_point() -> E521 {
         let point = E521{
             x: BigInt::from(0),
@@ -102,7 +102,7 @@ pub mod e521 {
     ///Adds two E521 points and returns another E521 curve point. If a point is defined as
     /// E521 = (x, y), then E521 addition is defined as:
 
-    ///(x1, y1) + (x2, y2) = ((x1y2 + y1x2) / (1 + (d)x1x2y1y2)), ((y1y2 - x1x2) / (1 - (d)x1x2y1y2))
+    /// (x₁, y₁) + (x₂, y₂)  = (x₁y₂ + y₁x₂) / (1 + dx₁x₂y₁y₂), (y₁y₂ − x₁x₂) / (1 − dx₁x₂y₁y₂)
 
     ///where "/" is defined to be multiplication by modular inverse.
     pub fn add_points(p1  : &E521, p2: &E521) -> E521 {
@@ -113,36 +113,37 @@ pub mod e521 {
         let x1 = p1.x.clone();
         let y1 = p1.y.clone();
 
-        // (x1y2 + y1x2)
+        // (x₁y₂ + y₁x₂)
         let x1y2 = (x1 * &p2.y).mod_floor(&p);
         let y1x2 = (y1 * &p2.x).mod_floor(&p);
         let x1y2y1x2_sum = (x1y2 + y1x2).mod_floor(&p);
 
         let x1 = p1.x.clone();
 
-        // 1 / (1 + (d)x1x2y1y2))
+        // 1 / (1 + dx₁x₂y₁y₂)
         let one_plus_dx1x2y1y2 = (BigInt::from(1) + (d * x1 * &p2.x * &p1.y * &p2.y)).mod_floor(&p);
         let one_plus_dx1x2y1y2inv = mod_inv(&one_plus_dx1x2y1y2, &p);
 
         let x1 = p1.x.clone();
         let y1 = p1.y.clone();
 
-        // (y1y2 - x1x2)
+        // (y₁y₂ − x₁x₂)
         let y1y2x1x2_difference = ((y1 * &p2.y) - (x1 * &p2.x)).mod_floor(&p);
 
         let x1 = p1.x.clone();
         let d = p1.d.clone();
 
-        // 1 / (1 - (d)x1x2y1y2))
+        // 1 / (1 − dx₁x₂y₁y₂)
         let one_minus_dx1x2y1y2 = (BigInt::from(1) - (d * x1 * &p2.x * &p1.y * &p2.y)).mod_floor(&p);
         let one_minus_dx1x2y1y2inv = mod_inv(&one_minus_dx1x2y1y2, &p);
 
-        // ((x1y2 + y1x2) / (1 + (d)x1x2y1y2))
+        // (x₁y₂ + y₁x₂) / (1 + dx₁x₂y₁y₂)
         let new_x = (x1y2y1x2_sum * one_plus_dx1x2y1y2inv).mod_floor(&p);
 
-        //((y1y2 - x1x2) / (1 - (d)x1x2y1y2))
+        // (y₁y₂ − x₁x₂) / (1 − dx₁x₂y₁y₂)
         let new_y = (y1y2x1x2_difference * one_minus_dx1x2y1y2inv).mod_floor(&p);
         get_e521_point(new_x, new_y)
+
     }
 
 
@@ -162,7 +163,7 @@ pub mod e521 {
         } r0
     }
 
-    /// Solves for y in curve equation 𝑥^2 + 𝑦^2 = 1 + 𝑑𝑥^2𝑦^2
+    /// Solves for y in curve equation 𝑥² + 𝑦² = 1 + 𝑑𝑥²𝑦²
     fn solve_for_y(x: &BigInt, p: BigInt, msb: bool) -> BigInt {
         let num = BigInt::from(1) - x.pow(2);
         let num = mod_formula(&num, &p);

@@ -6,7 +6,7 @@ mod tests {
     use num_bigint::{BigInt};
     use rand::{Rng, thread_rng};
     #[test]
-    // 0 * G = neutral point
+    // 0 * G = 𝒪 
     fn test_zero_times_g() {
         let point  = get_e521_gen_point(false);
         let s = BigInt::from(0);
@@ -67,7 +67,7 @@ mod tests {
     }
 
     #[test]
-    //4 * G != neutral point
+    //4 * G != 𝒪 
     fn test_four_g_not_id() {
         let four_g = sec_mul(BigInt::from(4), get_e521_gen_point(false));
         let id = get_e521_id_point();
