@@ -1,4 +1,4 @@
-# Constant time Edwards curve point multiplication
+# Side-channel resistant Edwards curve point multiplication
 
 ## Background
 
